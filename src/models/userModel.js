@@ -11,4 +11,4 @@ const userSchema = new Schema({
 
 })
 
-export const ProductModel = model('users', userSchema)
+export const UserModel = model('users', userSchema)
