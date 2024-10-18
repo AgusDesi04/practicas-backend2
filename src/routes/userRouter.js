@@ -1,39 +1,16 @@
 import { Router } from "express";
-import usersManager from "../daos/usersManager.js";
+import { loginResponse, registerResponse } from "../controllers/userControllers.js";
+import { isAuth } from "../middlewares/isAuth.js";
+import passport from "passport";
+
 
 const usersRouter = Router()
 
-usersRouter.post('/register', async (req, res) => {
-  try {
-    const newUser = await usersManager.register(req.body)
-    if (newUser) {
-      res.redirect('/')
-    } else {
-      res.redirect('/errorRegistro')
-    }
-  } catch (error) {
-    res.json({ message: error.message })
-  }
-})
+usersRouter.post('/register', passport.authenticate('register'), registerResponse )
 
-usersRouter.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body
+usersRouter.post('/login', passport.authenticate('login'),  loginResponse)
 
-    const user = await usersManager.login(email, password)
-
-    if(user){
-      req.session.email = email
-      // req.session.password = password
-      res.redirect('/perfil')
-    }else{
-      res.redirect('/errorLogin')
-    }
-
-  } catch (error) {
-    res.json({ message: error.message })
-  }
-})
+usersRouter.get('/private', isAuth, (req, res)=> res.send('INFORMACION CONFIDENCIAL') )
 
 
 export default usersRouter

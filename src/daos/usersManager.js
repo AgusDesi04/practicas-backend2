@@ -1,3 +1,4 @@
+import { createHash, isValidPassword } from "../utils.js";
 import { UserModel } from "./models/userModel.js";
 
 export default class usersManager {
@@ -10,18 +11,17 @@ export default class usersManager {
     }
   }
 
+  static async getById(id){
+    try {
+      return await UserModel.findById(id)
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
   static async register(user) {
     try {
-
-      const { email } = user
-      const existsUser = await this.existsUser(email)
-
-      if (!existsUser) {
-        return await UserModel.create(user)
-      } else {
-        return null
-      }
-
+      return await UserModel.create(user)
     } catch (error) {
       throw new Error(error)
     }
@@ -29,7 +29,13 @@ export default class usersManager {
 
   static async login(email, password) {
     try {
-      return await UserModel.findOne({email, password})
+      const userExists = await UserModel.findOne({ email })
+      if (userExists) {
+        const passValid = await isValidPassword(password, userExists)
+
+        if (!passValid) return passValid
+        else return userExists
+      }
     } catch (error) {
       throw new Error(error)
     }
