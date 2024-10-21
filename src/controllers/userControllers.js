@@ -31,3 +31,21 @@ export const loginResponse = async (req, res, next) => {
   }
 }
 
+export const passportResponse = async (req, res, next) => {
+  try {
+    const {first_name, last_name, email, isGithub, isGoogle} = req.user
+    res.json({
+      message: 'login ok!',
+      session: req.session,
+      user: {
+        first_name,
+        last_name,
+        email,
+        isGithub,
+        isGoogle
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+}
